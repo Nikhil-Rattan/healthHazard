@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1074461028540-otru0idsqv8e36og27mut1d629h8c66f.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1074461028540-otru0idsqv8e36og27mut1d629h8c66f</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDyiU2GNw86FIFVcke_XuxRYHfHlt8bLwg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1074461028540</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sorrento.covistix.m</string>
+	<key>PROJECT_ID</key>
+	<string>covistix</string>
+	<key>STORAGE_BUCKET</key>
+	<string>covistix.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1074461028540:ios:caf2c5de8fde1f83ed20b9</string>
+</dict>
+</plist>

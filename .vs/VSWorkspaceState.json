@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\App\\Container",
+    "\\App\\I18n",
+    "\\App\\Services",
+    "\\App\\Stores",
+    "\\App\\Stores\\PatientProfile"
+  ],
+  "PreviewInSolutionExplorer": false
+}

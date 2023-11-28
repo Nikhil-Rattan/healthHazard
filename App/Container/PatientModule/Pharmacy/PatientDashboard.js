@@ -1,0 +1,595 @@
+import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  TouchableWithoutFeedback,
+  AppState,
+} from 'react-native';
+
+import ValidationComponent from 'react-native-form-validator';
+import { Images, Helpers, Colors } from 'App/Theme';
+import { connect } from 'react-redux';
+import { PropTypes } from 'prop-types';
+import RBSheet from 'react-native-raw-bottom-sheet';
+import NavigationService from 'App/Services/NavigationService';
+import AuthenticateActions from 'App/Stores/Authentication/Actions';
+import { LanguageEnum } from 'App/Enums';
+
+class PatientDashboard extends ValidationComponent {
+  constructor(props) {
+    super(props);
+    this.state = { IsEnglish: true, IsSpanish: false, IsPortuguese: false, currentDate: new Date() };
+    this._GetNotificationCount = this._GetNotificationCount.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.closeAllLoader();
+    if (this.props.IsSelectionLangaugeDiffrent) {
+      this.RBErrorSheet.open();
+    }
+    AppState.addEventListener('change', this._GetNotificationCount);
+    this._unsubscribeFocus = this.props.navigation.addListener('focus', () => {
+      this._onFocus();
+    });
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._GetNotificationCount);
+    if (typeof this._unsubscribeFocus != 'undefined') this._unsubscribeFocus();
+  }
+
+  _GetNotificationCount() {
+    if (!(AppState.currentState == 'background')) {
+      let { UserId } = this.props.authenticatedUser;
+      this.props.getNotificationCount({ UserId: UserId });
+    }
+  }
+  _onFocus = () => {
+    this.setState({ currentDate: new Date() });
+  }
+
+  SelectEnglishLanguage() {
+    this.setState({ IsEnglish: true, IsSpanish: false, IsPortuguese: false });
+  }
+  SelectSpanishLanguage() {
+    this.setState({ IsSpanish: true, IsEnglish: false, IsPortuguese: false });
+  }
+  SelectPortugueseLanguage() {
+    this.setState({ IsSpanish: false, IsEnglish: false, IsPortuguese: true });
+  }
+  ContinueLanguageSelection() {
+    this.props.updateUserLanguage({
+      UserId: this.props.authenticatedUser.UserId,
+      LanguageId: this.state.IsEnglish ? 1 : this.state.IsSpanish ? 2 : 3,
+    });
+    this.RBErrorSheet.close();
+  }
+
+  render() {
+    console.log(this.props.authenticatedUser);
+    let days = LanguageEnum['WeekDays-' + this.props.locale];
+    var d = this.state.currentDate;
+    let DayName = days[d.getDay()];
+    var UStime = d.getHours();
+    var USMinute = d.getMinutes();
+
+    return (
+      <View style={[{ backgroundColor: '#ffffff', flex: 1 }]}>
+        <RBSheet
+          ref={(ref) => {
+            this.RBErrorSheet = ref;
+          }}
+          height={500}
+          openDuration={250}
+          //  closeOnDragDown={true}
+          closeOnPressMask={false}
+          closeOnPressBack={false}
+          customStyles={{
+            container: {
+              borderTopLeftRadius: 40,
+              borderTopRightRadius: 40,
+            },
+          }}>
+          <View>
+            <Image
+              style={{ width: 120, height: 120, alignSelf: 'center' }}
+              resizeMode="contain"
+              source={Images.Rejectedkitimage}
+            />
+          </View>
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              alignItems: 'center',
+              flexDirection: 'column',
+            }}>
+            <Text
+              style={[
+                Helpers.btnText,
+                Helpers.mediumfont,
+                {
+                  color: Colors.patientColor,
+                  fontSize: 30,
+                  textAlign: 'center',
+                  marginTop: 25,
+                  justifyContent: 'center',
+                },
+              ]}>
+              {
+                this.props.selectedMessage[
+                'EditFacProfile-LanguageSelectLanguage'
+                ]
+              }
+            </Text>
+
+            <Text
+              style={[
+                Helpers.btnText,
+                Helpers.book,
+                {
+                  color: Colors.BlueColorNew,
+                  fontSize: 15,
+                  textAlign: 'center',
+                  marginTop: 15,
+                  marginBottom: 15,
+                  width: '93%',
+                },
+              ]}>
+              {
+                this.props.selectedMessage[
+                'EditFacProfile-DashboardChangeLanguage'
+                ]
+              }
+            </Text>
+          </View>
+          <View style={{ alignSelf: 'center', marginBottom: 20 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                width: '90%',
+              }}>
+              <TouchableOpacity
+                onPress={this.SelectEnglishLanguage.bind(this)}
+                style={{
+                  width: '30%',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                {this.state.IsEnglish ? (
+                  <Image
+                    style={{ width: 18, height: 18, alignSelf: 'center' }}
+                    resizeMode="contain"
+                    source={Images.CircleShapePurple}
+                  />
+                ) : (
+                  <Image
+                    style={{ width: 18, height: 18, alignSelf: 'center' }}
+                    resizeMode="contain"
+                    source={Images.unselectlang}
+                  />
+                )}
+                <Text style={[Helpers.book, { fontSize: 14, marginLeft: 8 }]}>
+                  {this.props.selectedMessage['EditFacProfile-English']}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={this.SelectSpanishLanguage.bind(this)}
+                style={{
+                  width: '30%',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                {this.state.IsSpanish ? (
+                  <Image
+                    style={{ width: 18, height: 18, alignSelf: 'center' }}
+                    resizeMode="contain"
+                    source={Images.CircleShapePurple}
+                  />
+                ) : (
+                  <Image
+                    style={{ width: 18, height: 18, alignSelf: 'center' }}
+                    resizeMode="contain"
+                    source={Images.unselectlang}
+                  />
+                )}
+                <Text style={[Helpers.book, { fontSize: 14, marginLeft: 8 }]}>
+                  {this.props.selectedMessage['EditFacProfile-Spanish']}
+                </Text>
+              </TouchableOpacity>
+
+              {/* <TouchableOpacity
+                onPress={this.SelectPortugueseLanguage.bind(this)}
+                style={{
+                  width: '30%',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                {this.state.IsPortuguese ? (
+                  <Image
+                    style={{ width: 18, height: 18, alignSelf: 'center' }}
+                    resizeMode="contain"
+                    source={Images.CircleShapePurple}
+                  />
+                ) : (
+                  <Image
+                    style={{ width: 18, height: 18, alignSelf: 'center' }}
+                    resizeMode="contain"
+                    source={Images.unselectlang}
+                  />
+                )}
+                <Text style={[Helpers.book, { fontSize: 14, marginLeft: 8 }]}>
+                  {this.props.selectedMessage['EditFacProfile-Portugues']}
+                </Text>
+              </TouchableOpacity> */}
+            </View>
+          </View>
+          <TouchableOpacity
+            style={[
+              Helpers.btn,
+              {
+                position: 'absolute',
+                backgroundColor: Colors.patientColor,
+                width: '90%',
+                alignSelf: 'center',
+                bottom: 30
+              },
+            ]}
+            onPress={this.ContinueLanguageSelection.bind(this)}
+          //   onPress={()=>{NavigationService.navigate('InstructionFirstScreen')}}
+          >
+            <Text
+              style={[Helpers.btnText, { color: Colors.white, fontSize: 17 }]}>
+              {this.props.selectedMessage['TestingSiteListScreen-ContinueNew']}
+            </Text>
+          </TouchableOpacity>
+        </RBSheet>
+
+        {/* Starting of Dashboard Screen */}
+        <ScrollView>
+          <View
+            style={{
+              height: 80,
+              backgroundColor: '#ffffff',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+            }}>
+            <Image
+              style={{ height: 80, width: 80, marginTop: 20 }}
+              resizeMode="cover"
+              source={Images.MainLogo}
+            />
+          </View>
+
+          {/* Greeting Heading text with Date and Time. */}
+          <View
+            style={{
+              backgroundColor: '#00000',
+              marginTop: 40,
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                marginLeft: 20,
+              }}>
+              <Text
+                style={[
+                  Helpers.mediumFont,
+                  {
+                    fontSize: 15,
+                    color: '#8492A6',
+                    textAlign: 'left',
+                    width: '90%',
+                    marginTop: 0,
+                    marginBottom: 5,
+                  },
+                ]}>
+                {DayName} {UStime > 12 ? '0' + UStime - 12 : UStime}:
+                {USMinute < 10 ? '0' + USMinute : USMinute}
+                {UStime < 12 ? ' am' : ' pm'}
+              </Text>
+              <Text
+                numberOfLines={1}
+                style={[
+                  Helpers.bold,
+                  {
+                    fontSize: 30,
+                    lineHeight: 40,
+                    color: '#414141',
+                    textAlign: 'left',
+                    width: '90%',
+                  },
+                ]}>
+                {UStime < 12
+                  ? this.props.selectedMessage['SearchFacility-GoodMorning']
+                  : UStime > 12 && UStime > 16
+                    ? this.props.selectedMessage['SearchFacility-GoodEvening']
+                    : this.props.selectedMessage['SearchFacility-GoodAfternoon']}
+                ,{' '}
+              </Text>
+            </View>
+          </View>
+
+          {/* Name of User */}
+          <Text
+            numberOfLines={2}
+            style={[
+              Helpers.bold,
+              {
+                textTransform: 'capitalize',
+                lineHeight: 40,
+                fontSize: 30,
+                marginLeft: 20,
+                color: '#333333',
+                textAlign: 'left',
+                width: '90%',
+              },
+            ]}>
+            {this.props.authenticatedUser?.FirstName}
+          </Text>
+
+          {/* Starting of View having tiles */}
+          <View style={{ marginHorizontal: 15 }}>
+            <View
+              style={[
+                {
+                  flexDirection: 'row',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                },
+                Helpers.DashboardRow,
+              ]}>
+
+              {/* View Instructional Video Tile */}
+              <TouchableWithoutFeedback
+                style={{ height: 135, width: '45%' }}
+                onPress={() => {
+                  NavigationService.navigate('VideoInstructionNewScreen', {
+                    IsDoctor: false,
+                  });
+                }}>
+                <View
+                  style={[
+                    Helpers.PatientCard,
+                    {
+                      height: 135,
+                      width: '45%',
+                      backgroundColor: '#FFFFFF',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                    },
+                  ]}>
+                  <Image
+                    style={{ height: 35, width: 35, marginBottom: 4 }}
+                    resizeMode="cover"
+                    source={Images.Vedioinstruction}
+                  />
+                  <Text
+                    style={[
+                      {
+                        color: '#673ab7',
+                        fontSize: 12,
+                        width: 120,
+                        textAlign: 'center',
+                      },
+                      Helpers.bold,
+                    ]}>
+                    {this.props.selectedMessage['PatientDashboard-Box5']}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+
+              {/*Order Test Kit  for At-Home Use Tile*/}
+              {/* <TouchableWithoutFeedback
+                style={{ height: 135, width: '45%' }}
+                onPress={() => {
+                  NavigationService.navigate('OurProducts');
+                }}>
+                <View
+                  style={[
+                    Helpers.PatientCard,
+                    {
+                      height: 135,
+                      width: '45%',
+                      backgroundColor: '#FFFFFF',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                    },
+                  ]}>
+                  <Image
+                    style={{ height: 35, width: 35, marginBottom: 4 }}
+                    resizeMode="cover"
+                    source={Images.MedicalFacility}
+                  />
+                  <Text
+                    style={[
+                      {
+                        color: '#673ab7',
+                        fontSize: 12,
+                        width: 120,
+                        textAlign: 'center',
+                      },
+                      Helpers.bold,
+                    ]}>
+                    {this.props.selectedMessage['PatientDashboard-Box1']}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+ */}
+              {/* Start An At-Home Test Tile */}
+              <TouchableWithoutFeedback
+                style={{ height: 135, width: '45%' }}
+                onPress={() => {
+                  NavigationService.navigate('InstructionFirstScreen');
+                }}>
+                <View
+                  style={[
+                    Helpers.PatientCard,
+                    {
+                      height: 135,
+                      width: '45%',
+                      backgroundColor: '#FFFFFF',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                    },
+                  ]}>
+                  <Image
+                    style={{ height: 35, width: 35, marginBottom: 4 }}
+                    resizeMode="cover"
+                    source={Images.MedicalStartKit}
+                  />
+                  <Text
+                    style={[
+                      { color: '#673ab7', width: 120, textAlign: 'center' },
+                      Helpers.bold,
+                    ]}>
+                    {this.props.selectedMessage['PatientDashboard-Box3']}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+
+            </View>
+            {/* End of Row 1 */}
+
+            {/* <View
+              style={[
+                {
+                  flexDirection: 'row',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                },
+                Helpers.DashboardRow,
+              ]}> */}
+
+            {/* Perform test in medical center Tile*/}
+            {/* <TouchableWithoutFeedback
+                style={{ height: 135, width: '45%' }}
+                onPress={() => {
+                  NavigationService.navigate('TestingSitesListsScreen');
+                }}>
+                <View
+                  style={[
+                    Helpers.PatientCard,
+                    {
+                      height: 135,
+                      width: '45%',
+                      backgroundColor: '#FFFFFF',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                    },
+                  ]}>
+                  <Image
+                    style={{ height: 35, width: 35, marginBottom: 4 }}
+                    resizeMode="cover"
+                    source={Images.MedicalStartKit}
+                  />
+                  <Text
+                    style={[
+                      { color: '#673ab7', width: 120, textAlign: 'center' },
+                      Helpers.bold,
+                    ]}>
+                    {this.props.selectedMessage['PatientDashboard-Box2']}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback> */}
+
+            {/* Consult a Telehealth Physician About COVID-19 Tile */}
+            {/* <TouchableWithoutFeedback
+                style={{ height: 135, width: '45%' }}
+                onPress={() => {
+                  NavigationService.navigate('TelehealthExpertsScreens', {
+                    IsDoctor: true,
+                  });
+                }}>
+                <View
+                  style={[
+                    Helpers.PatientCard,
+                    {
+                      height: 135,
+                      width: '45%',
+                      padding: 5,
+                      backgroundColor: '#FFFFFF',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                    },
+                  ]}>
+                  <Image
+                    style={{ height: 35, width: 35, marginBottom: 4 }}
+                    resizeMode="cover"
+                    source={Images.MedicalTeleHealth}
+                  />
+                  <Text
+                    style={[
+                      { color: '#673ab7', fontSize: 12, textAlign: 'center' },
+                      Helpers.bold,
+                    ]}>
+                    {this.props.selectedMessage['PatientDashboard-Box4']}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View> */}
+            {/* End of Row 2 */}
+
+            <View
+              style={[
+                {
+                  flexDirection: 'row',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                },
+                Helpers.DashboardRow,
+              ]}>
+
+            </View>
+          </View>
+          {/* End of View having tiles */}
+        </ScrollView>
+      </View>
+    );
+  }
+}
+
+PatientDashboard.propTypes = {
+  selectedMessage: PropTypes.any,
+  locale: PropTypes.any,
+  authenticatedUser: PropTypes.any,
+  getNotificationCount: PropTypes.func,
+  IsSelectionLangaugeDiffrent: PropTypes.any,
+  updateUserLanguage: PropTypes.func,
+};
+
+const mapStateToProps = (state) => ({
+  selectedMessage: state.startup.selectedMessage,
+  locale: state.startup.locale,
+
+  authenticatedUser: state.authenticate.authenticatedUser,
+  IsSelectionLangaugeDiffrent: state.authenticate.IsSelectionLangaugeDiffrent,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  getNotificationCount: (data) =>
+    dispatch(AuthenticateActions.getNotificationCount(data)),
+  updateUserLanguage: (data) =>
+    dispatch(AuthenticateActions.updateUserLanguage(data)),
+  closeAllLoader: () =>
+    dispatch(AuthenticateActions.closeAllLoader())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PatientDashboard);
+
+const styles = StyleSheet.create({});

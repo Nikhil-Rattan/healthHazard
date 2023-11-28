@@ -1,0 +1,35 @@
+ 
+export default {
+    Textlogo: require('../Images/splash.png'),
+    logowithoutlogo: require('../Images/vc-1.png'),
+    Mainlogo: require('../Images/vc_logo_2.png'),
+    // PasswordImage : require('./../Images/AllImage/password.png'),
+    // Googlelogo:require('./../Images/AllImage/Google.png'),
+    // UserImage: require('./../Images/AllImage/user.png'),
+    // EmailImage: require('./../Images/AllImage/gmail.png'),
+    // LoaderImage: require('./../Images/AllImage/Loader.gif'),
+    // jackpotImage: require('App/Assets/Images/jackpot.png'),
+    // candidatesImage: require('App/Assets/Images/candidates.png'), 
+    // splashScreenGif:require('App/Assets/Images/lawnbowls.gif'),
+    // logImage:require('App/Assets/Images/log.jpg'),
+    // emailImage:require('App/Assets/Images/email.png'),
+    // lockImage:require('App/Assets/Images/lock.png'),
+    // throwingBowlImage: require('App/Assets/Images/ThrowingBowl.jpg'),
+    // downActiveImage:require('App/Assets/Images/downActive.png'),
+    // downInActiveImage:require('App/Assets/Images/downInActive.png'),
+    // upActiveImage:require('App/Assets/Images/upActive.png'),
+    // upInActiveImage:require('App/Assets/Images/upInActive.png'),
+    // logoutImage:require('App/Assets/Images/logout.png'),
+    // txtboxImage:require('App/Assets/Images/text-box.png'), 
+    // telephoneImage:require('App/Assets/Images/telephone.png') ,
+    // pockerImage:require('App/Assets/Images/poker-chip.png') ,
+    // boKaapImage:require('App/Assets/Images/bo-kaap.png') ,
+    // TopViewImage:require('App/Assets/Images/test.jpg') ,
+    // placeImage:require('App/Assets/Images/place.png') ,
+    // CSImage:require('App/Assets/Images/customer-support.png') ,
+  
+    // Loaderimg:require('App/Assets/Images/loading.gif') ,
+    //  hideEyeImage:require('./../Images/AllImage/Closeeye.png') ,
+    //  showEyeImage:require('./../Images/AllImage/Openeye.png') 
+  }
+  
